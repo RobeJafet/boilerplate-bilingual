@@ -1,0 +1,15 @@
+{
+  "general": {
+    "header": {
+      "menu": "Menú"
+    },
+    "footer": {
+      "rights": "Todos los derechos reservados"
+    },
+    "notFound": {
+      "title": "La página que buscas",
+      "subtitle": "no existe",
+      "backToHome": "Regresar al inicio"
+    }
+  }
+}

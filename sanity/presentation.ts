@@ -7,26 +7,46 @@ import {
   export const resolve: PresentationPluginOptions["resolve"] = {
     mainDocuments: defineDocuments([
       {
-        route: "/",
-        filter: `_type == 'home'`,
+        route: "/en",
+        filter: `_type == 'home' && language == 'en'`,
       },
       {
-        route: "/:slug",
-        filter: `_type == "page" && slug.current == $slug`,
+        route: "/es",
+        filter: `_type == 'home' && language == 'es'`,
+      },
+      {
+        route: "/:lang/:slug",
+        filter: `_type == "page" && slug.current == $slug && language == $lang`,
       },
     ]),
     locations: {
-      service: defineLocations({
+      home: defineLocations({
+        select: {
+          language: "language",
+        },
+        resolve: (doc) => ({
+          locations: doc?.language
+            ? [
+                {
+                  title: "Home",
+                  href: `/${doc.language}`,
+                },
+              ]
+            : [],
+        }),
+      }),
+      page: defineLocations({
         select: {
           title: "title",
           slug: "slug.current",
+          language: "language",
         },
         resolve: (doc) => ({
-          locations: doc?.slug
+          locations: doc?.slug && doc?.language
             ? [
                 {
                   title: doc.title || "Page",
-                  href: `/${doc.slug}`,
+                  href: `/${doc.language}/${doc.slug}`,
                 },
               ]
             : [],
@@ -34,4 +54,3 @@ import {
       }),
     },
   };
-  

@@ -1,8 +1,6 @@
 import { sectionsForDocument } from "@/sections/registry";
 import { defineField, defineType } from "sanity";
 
-
-
 export default defineType({
   name: "home",
   type: "document",
@@ -14,16 +12,22 @@ export default defineType({
       type: "metadata",
       title: "Metadata",
     }),
-
+    defineField({
+      name: "language",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
   ],
   preview: {
     select: {
+      language: "language",
       media: "ogImage",
     },
-    prepare({ media }) {
+    prepare({ language, media }) {
       return {
-        title: `Home`,
-        media: media,
+        title: `Home (${language?.toUpperCase() || "—"})`,
+        media,
       };
     },
   },

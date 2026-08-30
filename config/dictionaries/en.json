@@ -1,0 +1,15 @@
+{
+  "general": {
+    "header": {
+      "menu": "Menu"
+    },
+    "footer": {
+      "rights": "All rights reserved"
+    },
+    "notFound": {
+      "title": "The page you are looking for",
+      "subtitle": "does not exist",
+      "backToHome": "Go back to home"
+    }
+  }
+}

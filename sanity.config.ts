@@ -4,6 +4,8 @@
  * This configuration is used to for the Sanity Studio that’s mounted on the `/app/studio/[[...tool]]/page.tsx` route
  */
 
+import { documentInternationalization, SupportedLanguages } from '@sanity/document-internationalization'
+import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
@@ -15,17 +17,34 @@ import {structure} from './sanity/structure'
 import { presentationTool } from 'sanity/presentation'
 import { resolve } from './sanity/presentation'
 import { SINGLETONS } from './config/singletons/singletons'
+import { defaultLocale, LANGUAGES } from './config/i18n/i18nConfig'
 
 const singletonTypes = new Set(SINGLETONS.map(singleton => singleton._type))
 const singletonActions = new Set(["publish", "discardChanges", "restore"]);
+const localizedDocumentTypes = ['home', 'page', 'settings']
 
 export default defineConfig({
   basePath: '/studio',
-  title: 'Boilerplate CMS',
+  title: 'Boilerplate Bilingual CMS',
   projectId,
   dataset,
   schema: {
-    types: schema
+    types: schema,
+    templates: (prev) => [
+      ...prev.filter((template) => !['page'].includes(template.id)),
+      {
+        id: 'page-es',
+        title: 'Page (ES)',
+        schemaType: 'page',
+        value: {language: 'es'}
+      },
+      {
+        id: 'page-en',
+        title: 'Page (EN)',
+        schemaType: 'page',
+        value: {language: 'en'}
+      },
+    ],
   },
   plugins: [
     structureTool({structure}),
@@ -37,6 +56,15 @@ export default defineConfig({
         },
       },
       resolve,
+    }),
+    documentInternationalization({
+      supportedLanguages: LANGUAGES as SupportedLanguages,
+      schemaTypes: localizedDocumentTypes,
+    }),
+    internationalizedArray({
+      languages: LANGUAGES,
+      defaultLanguages: [defaultLocale],
+      fieldTypes: ['string'],
     }),
   ],
   document: {

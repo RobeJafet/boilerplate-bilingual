@@ -33,8 +33,9 @@ export default defineType({
       type: 'url',
       hidden: ({ parent }) => parent?.linkType !== 'href',
       validation: (Rule) =>
-        Rule.custom((value, context: any) => {
-          if (context.parent?.linkType === 'href' && !value) {
+        Rule.custom((value, context) => {
+          const parent = context.parent as { linkType?: string } | undefined
+          if (parent?.linkType === 'href' && !value) {
             return 'URL is required when Link Type is URL'
           }
 
@@ -55,14 +56,30 @@ export default defineType({
       name: 'page',
       title: 'Page',
       type: 'reference' as const,
-      to: [{type: 'home'}],
+      to: [{type: 'home'}, {type: 'page'}],
       options: {
+        filter: ({ document }) => {
+          const { language } = document
+          if (language) {
+            return {
+              filter: 'language == $language',
+              params: {
+                language,
+              },
+            }
+          }
+          return {}
+        },
         disableNew: true,
+        documentInternationalization: {
+          exclude: true,
+        },
       },
       hidden: ({parent}) => parent?.linkType !== 'page',
       validation: (Rule) =>
-        Rule.custom((value, context: any) => {
-          if (context.parent?.linkType === 'page' && !value) {
+        Rule.custom((value, context) => {
+          const parent = context.parent as { linkType?: string } | undefined
+          if (parent?.linkType === 'page' && !value) {
             return 'Page reference is required when Link Type is Page'
           }
           return true

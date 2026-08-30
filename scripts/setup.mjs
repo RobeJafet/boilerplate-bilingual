@@ -312,7 +312,7 @@ function addCors(projectId, siteUrl) {
 }
 
 /**
- * Siembra los documentos singleton (home, header, footer) definidos en config/singletons.
+ * Siembra los documentos singleton localizados (home/settings por idioma).
  * Usa el token de usuario de Sanity CLI (--with-user-token).
  */
 function seedSingletons() {
@@ -383,7 +383,8 @@ Done.
 Next steps:
   1. pnpm install   (if you haven't already)
   2. pnpm dev
-  3. Open http://localhost:3000/studio
+  3. Open http://localhost:3000 (redirects to /es or /en)
+  4. Open http://localhost:3000/studio
 
 Useful commands:
   pnpm new:section <name>

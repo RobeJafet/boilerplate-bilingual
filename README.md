@@ -1,6 +1,6 @@
-# ENLACE Boilerplate (Next.js + Sanity)
+# ENLACE Boilerplate bilingüe (Next.js + Sanity)
 
-Template monorepo-style for client sites: Next.js App Router, embedded Sanity Studio, live preview, and a section-based page builder.
+Template monorepo-style for client sites: Next.js App Router, embedded Sanity Studio, live preview, a section-based page builder, and **document-level i18n** (`en` / `es`).
 
 ## Stack
 
@@ -32,7 +32,7 @@ pnpm dev
 - Create a **viewer API token** (read-only; enough for Live + draft preview)
 - Add **CORS** for your site URL (default `http://localhost:3000`)
 - Write `.env.local`
-- Seed **singleton** documents (`home`, `header`, `footer`)
+- Seed **localized singleton** documents (`home-es` / `home-en`, `settings-es` / `settings-en`) plus `translation.metadata`
 
 Non-interactive example:
 
@@ -44,7 +44,7 @@ Flags: `--name`, `--org`, `--dataset`, `--site-url`, `--force`, `--skip-singleto
 
 ### 2. This repo is already a GitHub Template
 
-Private template: [RobeJafet/boilerplate-no-bilingual](https://github.com/RobeJafet/boilerplate-no-bilingual)
+Private template: [RobeJafet/boilerplate-bilingual](https://github.com/RobeJafet/boilerplate-bilingual)
 
 On GitHub: **Use this template** → **Create a new repository**.
 
@@ -56,7 +56,7 @@ cp .env.example .env.local   # or use values from pnpm bootstrap
 pnpm dev
 ```
 
-- Site: [http://localhost:3000](http://localhost:3000)
+- Site: [http://localhost:3000](http://localhost:3000) → redirects to `/es` or `/en`
 - Studio: [http://localhost:3000/studio](http://localhost:3000/studio)
 
 ## Environment variables
@@ -77,7 +77,7 @@ See [`.env.example`](./.env.example).
 
 ```bash
 pnpm bootstrap                 # new Sanity project + .env.local + singletons
-pnpm create:singletons     # seed home / header / footer
+pnpm create:singletons     # seed home / settings per language
 pnpm new:section hero      # scaffold a section module
 pnpm dev
 pnpm build
@@ -88,14 +88,27 @@ pnpm lint
 
 ```
 app/
-  (frontend)/     # Public site
-  (cms)/          # Studio + draft/revalidate API routes
-sanity/           # Schema, client, presentation, structure
-sections/         # Page builder sections (registry-driven)
-components/       # Shared UI
-config/singletons # Singleton document config
-scripts/          # setup + new-section scaffolder
+  (frontend)/[lang]   # Public site (/es, /en, /es/slug)
+  (cms)/              # Studio + draft/revalidate API routes
+config/i18n           # Locales, dictionaries, I18nProvider
+config/dictionaries   # UI copy (en.json / es.json)
+config/singletons     # Singleton document config (localized)
+sanity/               # Schema, client, presentation, structure
+sections/             # Page builder sections (registry-driven)
+components/           # Shared UI (incl. LangChangeHandler)
+proxy.ts              # Locale detection + redirect
+scripts/              # setup + new-section scaffolder
 ```
+
+## i18n
+
+- Locales live in `config/i18n/i18nConfig.ts` (`defaultLocale` is `es`)
+- URLs always include the locale: `/es`, `/en/about`
+- `proxy.ts` redirects `/` (and any path without a locale) using the `NEXT_LOCALE` cookie or `Accept-Language`
+- Sanity uses `@sanity/document-internationalization` (one document per language) plus `sanity-plugin-internationalized-array` for field-level strings when you need them
+- Singletons get a document per language (`home-es`, `home-en`) linked by `translation.metadata`
+- `LangChangeHandler` switches language and keeps the translated slug when a translation exists
+- UI strings that are not CMS content go in `config/dictionaries/{en,es}.json` and are read with `useI18n()`
 
 ## Sections
 
@@ -116,6 +129,8 @@ Defined in `config/singletons/singletons.ts`. Seed with:
 ```bash
 pnpm create:singletons
 ```
+
+Creates `home-es` / `home-en` and `settings-es` / `settings-en` plus a `translation.metadata` document so Studio can link translations. Header links and footer email live as fields on Settings.
 
 ## Notes
 

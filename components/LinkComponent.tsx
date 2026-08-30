@@ -2,9 +2,22 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
 import type { Route } from "next";
+import { defaultLocale, locales } from "@/config/i18n/i18nConfig";
 
+function langFromPathname(pathname: string): LocalePage {
+    const maybeLang = pathname.split("/").filter(Boolean)[0];
+    return locales.includes(maybeLang as LocalePage)
+        ? (maybeLang as LocalePage)
+        : defaultLocale;
+}
+
+function resolveLinkPath(page?: InternalLink) {
+    if (!page) return "";
+    if (page._type === "page") return `/${page.language}/${page.slug}`;
+    if (page._type === "home") return `/${page.language}`;
+    return "";
+}
 
 export default function LinkComponent({
     href,
@@ -18,7 +31,8 @@ export default function LinkComponent({
 
     const pathname = usePathname();
     const router = useRouter();
-    const [linkPath, setLinkPath] = useState<string>("");
+    const lang = page?.language || langFromPathname(pathname);
+    const linkPath = linkType === "page" ? resolveLinkPath(page) : "";
     const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     async function pageTransition(hrefString: string) {
@@ -33,17 +47,6 @@ export default function LinkComponent({
         await sleep(300); // Pause for 300ms
         router.push(hrefString as Route);
     }
-
-    useEffect(() => {
-        if (linkType === "page" && page) {
-            if (page._type === "page") {
-                setLinkPath(`/${page.slug}`);
-            } else if (page._type === "home") {
-                setLinkPath(`/`);
-            }
-        }
-    }, [pathname, linkType, page]);
-
 
     const handleClick = async (
         e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, 
@@ -93,7 +96,7 @@ export default function LinkComponent({
 
         const id = anchor.split("#")[1];
 
-        if (pathname === "/") {
+        if (pathname === `/${lang}` || pathname === `/${lang}/`) {
             document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
             return;
         }
@@ -115,7 +118,7 @@ export default function LinkComponent({
             </a>
         ); 
     } else if (linkType === "href" && href?.includes("#")) {
-        const anchor = `/#${href.split("#")[1]}`;
+        const anchor = `/${lang}/#${href.split("#")[1]}`;
         return (
             <Link
                 href={anchor}
@@ -145,4 +148,3 @@ export default function LinkComponent({
 
     return null;
 }
-

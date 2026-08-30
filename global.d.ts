@@ -1,3 +1,5 @@
+type LocalePage = "en" | "es";
+
 interface Asset {
   _id: string;
   metadata: {
@@ -17,10 +19,20 @@ type Image = {
     hotspot?: { x: number; y: number; height: number; width: number };
 };
 
+type Translation = {
+    type: string;
+    en: {
+        slug?: string;
+    };
+    es: {
+        slug?: string;
+    };
+};
 
 type InternalLink = {
   _type: string;
   slug: string;
+  language: LocalePage;
 };
 
 type Link = {
@@ -41,6 +53,7 @@ type Metadata = {
   metaDescription?: string;
   ogImage?: Image;
   noIndex: boolean;
+  language?: LocalePage;
 };
 
 type Page ={
@@ -55,6 +68,12 @@ type Home =  {
   readonly _type: "home";
   metadata?: Metadata;
   sections?: Section[];
+};
+
+type Settings = {
+  readonly _type: "settings";
+  headerLinks?: Link[];
+  footerEmail?: string;
 };
 
 type SectionModule<TProps = unknown> = {

@@ -16,13 +16,17 @@ export function generatePageMetadata({
   metadata,
   slug,
   title,
+  lang,
 }: {
-  metadata: Metadata;
+  metadata?: Metadata;
   slug?: string;
   title?: string;
+  lang?: LocalePage;
 }) {
+  const language = metadata?.language || lang;
+
   return {
-    title: metadata?.metaTitle || title || "Abogados",
+    title: metadata?.metaTitle || title || "Title Undefined",
     description: metadata?.metaDescription,
     openGraph: {
       images: [
@@ -35,6 +39,7 @@ export function generatePageMetadata({
         },
       ],
       type: "website",
+      locale: language,
     },
     robots: !isProduction
       ? "noindex, nofollow"
@@ -42,7 +47,7 @@ export function generatePageMetadata({
         ? "noindex"
         : "index, follow",
    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${slug === 'home' ? "" : slug}`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${language}${slug === 'home' || !slug ? "" : `/${slug}`}`,
     },
   };
 }

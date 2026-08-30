@@ -4,8 +4,7 @@ import page from "../documents/page";
 import metadata from "../objects/metadata";
 import imageComponent from "../objects/image";
 import link from "../objects/link";
-import header from "../documents/header";
-import footer from "../documents/footer";
+import settings from "../documents/settings";
 
 const objects = [
   metadata,
@@ -16,8 +15,7 @@ const objects = [
 const documents = [
   home,
   page,
-  header,
-  footer,
+  settings,
 ]
 
 export const schema = [
