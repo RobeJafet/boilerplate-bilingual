@@ -1,41 +1,35 @@
-import { defineField, defineType } from "sanity";
+import { defineField, defineType,  defineArrayMember } from "sanity";
 
 export default defineType({
   name: "settings",
   type: "document",
   title: "Settings",
-  fieldsets: [
-    {
-      name: "header",
-      title: "Header",
-      options: {
-        collapsible: false,
-        collapsed: false,
-      },
-    },
-    {
-      name: "footer",
-      title: "Footer",
-      options: {
-        collapsible: false,
-        collapsed: false,
-      },
-    },
-  ],
   fields: [
     defineField({
-      name: "headerLinks",
-      type: "array" as const,
-      title: "Header Links",
-      of: [{ type: "link" }],
-      fieldset: "header",
+      name: "header",
+      title: "Header",
+      type: "object" as const,
+      fields: [
+        defineField({
+          name: "links",
+          type: "array" as const,
+          title: "Links",
+          of: [defineArrayMember({ type: "link" })],
+        }),
+      ],
     }),
     defineField({
-      name: "footerEmail",
-      type: "string",
-      title: "Footer Email",
-      validation: (rule) => rule.email(),
-      fieldset: "footer",
+      name: "footer",
+      title: "Footer",
+      type: "object" as const,
+      fields: [
+        defineField({
+          name: "email",
+          type: "string",
+          title: "Email",
+          validation: (rule) => rule.email(),
+        }),
+      ],
     }),
     defineField({
       name: "language",
